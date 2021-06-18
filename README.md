@@ -1,0 +1,2 @@
+# ansible-automation-
+This project is an application of Cloud Automation tools such as ansible on Public Cloud services. We have used ansible, on Google Cloud Platform (GCP). Ansible is an open-source automation tool, or platform, used for IT tasks such as configuration management, application deployment, intra service orchestration, and provisioning. Automation is crucial these days, with IT environments that are too complex and often need to scale too quickly for system administrators and developers to keep up if they had to do everything manually.
