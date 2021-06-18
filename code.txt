@@ -1,0 +1,57 @@
+---
+- hosts: localhost
+ tasks:
+ - name: creating a vpc
+   gcp_compute_network:
+     name: ansible-vpc-machine
+     project: summer-surface-296604
+     auth_kind: serviceaccount
+     service_account_file: /home/divu_singh04/ansible/key.json
+     state: present
+   register: network
+
+
+ - name: creating subnet
+   gcp_compute_subnetwork:
+     name: ansible-subnet
+     region: us-west1
+     network: "{{ network }}"
+     ip_cidr_range: 200.00.00.00/16
+     project: summer-surface-296604
+     auth_kind: serviceaccount
+     service_account_file: /home/divu_singh04/ansible/key.json
+     state: present
+   register: subnetwork
+
+ - name: creating instance
+   gcp_compute_instance:
+     name: instance1
+     machine_type: n1-standard-1
+     disks:
+       - auto_delete: true
+         boot: true
+         initialize_params:
+           - source_image: projects/debian-cloud/global/images/family/debian-8
+     network_interfaces:
+       - network: "{{ network }}"
+         subnetwork: " {{ subnetwork }}"
+         access_configs:
+           - name: External NAT
+             type: ONE_TO_ONE_NAT
+     metadata:
+       startup-script: |
+         #!/bin/bash
+         cd /tmp
+         wget https://dev.mysql.com/get/mysql-apt-config_0.8.10-1_all.deb
+         sudo dpkg -i mysql-apt-config*
+         sudo apt update -y
+         sudo apt install mysql-server -y
+         sudo systemctl restart mysql
+     zone: us-west1-a
+     project: summer-surface-296604
+     auth_kind: serviceaccount
+     service_account_file: /home/divu_singh04/ansible/key.json
+     state: present
+   register: out
+ - debug:
+     msg: "{{ out }}"
